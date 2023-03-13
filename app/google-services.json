@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "645954262950",
+    "project_id": "ebook-14d6a",
+    "storage_bucket": "ebook-14d6a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:645954262950:android:a88294c4fe4e0804146167",
+        "android_client_info": {
+          "package_name": "uk.ac.tees.aad.w9596086"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "645954262950-16rdmqulpo6bn0fujbpeou2bumb5f0mn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-zlhjT4pazDa9GQa5hd_1Ijr2atvyalY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "645954262950-16rdmqulpo6bn0fujbpeou2bumb5f0mn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
