@@ -2,4 +2,5 @@
     <string name="app_name">EBook App</string>
     <string name="navigation_drawer_open">Open</string>
     <string name="navigation_drawer_close">Close</string>
+    <string name="google_maps_key">AIzaSyCVVxHQnPaKQ7hLj9IkjyzO4WsQGK5Nj44</string>
 </resources>

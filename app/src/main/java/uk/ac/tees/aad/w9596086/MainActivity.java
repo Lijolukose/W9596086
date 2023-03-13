@@ -1,13 +1,21 @@
 package uk.ac.tees.aad.w9596086;
 
-import androidx.annotation.NonNull;
+
+import android.Manifest;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,7 +32,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,7 +46,7 @@ public class MainActivity extends AppCompatActivity{
     public DrawerLayout drawerLayout;
     public ActionBarDrawerToggle toggle;
     private RequestQueue mRequestQueue;
-    private ArrayList<Book> bookInfoArrayList;
+    private ArrayList<Book> books;
     private ProgressBar progressBar;
     private EditText searchEdt;
     private ImageButton searchBtn;
@@ -63,7 +73,45 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public boolean onNavigationItemSelected(@NonNull @NotNull MenuItem item) {
                 drawerLayout.closeDrawers();
-                return false;
+                switch (item.getItemId()) {
+                    case R.id.nav_my_books:
+                        startActivity(new Intent(MainActivity.this, MyEBooks.class));
+//                        Toast.makeText(getApplicationContext(),)
+                        return true;
+                    case R.id.nav_profile:
+                        startActivity(new Intent(MainActivity.this, Profile.class));
+                        return true;
+                    case R.id.nav_location:
+                        final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                        if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+                            buildAlertMessageNoGps();
+                            return false;
+                        }
+//                        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) !=
+//                                PackageManager.PERMISSION_GRANTED) {
+//                            ActivityCompat.requestPermissions(MainActivity.this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, 1004);
+//                            return false;
+//                        }
+                        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) !=
+                                PackageManager.PERMISSION_GRANTED) {
+                            ActivityCompat.requestPermissions(MainActivity.this, new String[] {Manifest.permission.ACCESS_COARSE_LOCATION}, 1005);
+                            return false;
+                        }
+                        else {
+                            Intent intent = new Intent(MainActivity.this, MapsActivity.class);
+                            startActivity(intent);
+                            return true;
+                        }
+                    case R.id.nav_logout:
+                        FirebaseAuth.getInstance().signOut();
+                        Toast.makeText(getApplicationContext(),"Successfully Logged out!",Toast.LENGTH_LONG).show();
+                        startActivity(new Intent(MainActivity.this, Login.class));
+                        finishAffinity();
+                        return true;
+                    default:
+                        return false;
+                }
+
             }
         });
 
@@ -102,12 +150,7 @@ public class MainActivity extends AppCompatActivity{
     }
 
     private void getBooksInfo(String query) {
-
-        // creating a new array list.
-        bookInfoArrayList = new ArrayList<>();
-
-        // below line is use to initialize
-        // the variable for our request queue.
+        books = new ArrayList<>();
         mRequestQueue = Volley.newRequestQueue(MainActivity.this);
 
         // below line is use to clear cache this
@@ -160,11 +203,11 @@ public class MainActivity extends AppCompatActivity{
 
                         // below line is use to pass our modal
                         // class in our array list.
-                        bookInfoArrayList.add(bookInfo);
+                        books.add(bookInfo);
 
                         // below line is use to pass our
                         // array list in adapter class.
-                        BookAdapter adapter = new BookAdapter(bookInfoArrayList, MainActivity.this);
+                        BookAdapter adapter = new BookAdapter(books, MainActivity.this);
 
                         // below line is use to add linear layout
                         // manager for our recycler view.
@@ -192,6 +235,22 @@ public class MainActivity extends AppCompatActivity{
         // at last we are adding our json object
         // request in our request queue.
         queue.add(booksObjrequest);
+    }
+    private void buildAlertMessageNoGps() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        dialog.cancel();
+                    }
+                });
+        builder.show();
     }
 
 }
